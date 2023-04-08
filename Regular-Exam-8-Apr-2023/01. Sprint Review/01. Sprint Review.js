@@ -29,115 +29,12 @@ function sprintReview(arrInput) {
     }
   }
 
-  for (const item of arrInput) {
-    let line = item.split(":");
-    let command = line[0];
-    let searchedAssignee = line[1];
-
-    switch (command) {
-      case "Add New":
-        let taskId = line[2];
-        let title = line[3];
-        let status = line[4];
-        let estimatedPoints = line[5];
-
-        if (!sprintBoardArr.find((e) => e.assignee === searchedAssignee)) {
-          console.log(
-            `Assignee ${searchedAssignee} does not exist on the board!`
-          );
-        } else {
-          let objTasks = {};
-          let arrTasks = [];
-          objTasks["taskId"] = taskId;
-          objTasks["title"] = title;
-          objTasks["status"] = status;
-          objTasks["estimatedPoints"] = estimatedPoints;
-          arrTasks.push(objTasks);
-          let foundAssignee = sprintBoardArr.find(
-            (e) => e.assignee === searchedAssignee
-          );
-          foundAssignee.tasks.push(objTasks);
-        }
-
-        break;
-
-      case "Remove Task":
-        if (!sprintBoardArr.find((e) => e.assignee === searchedAssignee)) {
-          console.log(
-            `Assignee ${searchedAssignee} does not exist on the board!`
-          );
-        } else {
-          let index = line[2];
-          let foundAssignee = sprintBoardArr.find(
-            (e) => e.assignee === searchedAssignee
-          );
-          if (index > foundAssignee.tasks.length - 1 || index < 0) {
-            console.log("Index is out of range!");
-          } else {
-            foundAssignee.tasks.splice(index, 1);
-          }
-        }
-
-        break;
-
-      case "Change Status":
-        let newTaskId = line[2];
-        let newStatus = line[3];
-        let foundAssignee = sprintBoardArr.find(
-          (e) => e.assignee === searchedAssignee
-        );
-
-        if (!foundAssignee) {
-          console.log(
-            `Assignee ${searchedAssignee} does not exist on the board!`
-          );
-          break;
-        }
-
-        if (!foundAssignee.tasks.find((e) => e.taskId === newTaskId)) {
-          console.log(
-            `Task with ID ${newTaskId} does not exist for ${searchedAssignee}!`
-          );
-        } else {
-          let foundTaskId = foundAssignee.tasks.find(
-            (e) => e.taskId === newTaskId
-          );
-          foundTaskId.status = newStatus;
-        }
-
-        break;
-
-      default:
-        break;
-    }
-  }
-
-  let toDoTasksTotalPoints = 0;
-  let inProgressTasksTotalPoints = 0;
-  let codeReviewTasksTotalPoints = 0;
-  let doneTasksTotalPoints = 0;
-
-  for (const item of sprintBoardArr) {
-    for (const task of item.tasks) {
-      switch (task.status) {
-        case "ToDo":
-          toDoTasksTotalPoints += Number(task.estimatedPoints);
-          break;
-        case "In Progress":
-          inProgressTasksTotalPoints += Number(task.estimatedPoints);
-          break;
-        case "Code Review":
-          codeReviewTasksTotalPoints += Number(task.estimatedPoints);
-          break;
-        case "Done":
-          doneTasksTotalPoints += Number(task.estimatedPoints);
-          break;
-
-        default:
-          break;
-      }
-    }
-  }
+  let {
+    toDoTasksTotalPoints,
+    inProgressTasksTotalPoints,
+    codeReviewTasksTotalPoints,
+    doneTasksTotalPoints,
+  } = commandSet();
 
   console.log(`ToDo: ${toDoTasksTotalPoints}pts`);
   console.log(`In Progress: ${inProgressTasksTotalPoints}pts`);
@@ -159,6 +56,124 @@ function sprintReview(arrInput) {
       codeReviewTasksTotalPoints
   ) {
     console.log("Sprint was unsuccessful...");
+  }
+
+  function commandSet() {
+    for (const item of arrInput) {
+      let line = item.split(":");
+      let command = line[0];
+      let searchedAssignee = line[1];
+
+      switch (command) {
+        case "Add New":
+          let taskId = line[2];
+          let title = line[3];
+          let status = line[4];
+          let estimatedPoints = line[5];
+
+          if (!sprintBoardArr.find((e) => e.assignee === searchedAssignee)) {
+            console.log(
+              `Assignee ${searchedAssignee} does not exist on the board!`
+            );
+          } else {
+            let objTasks = {};
+            let arrTasks = [];
+            objTasks["taskId"] = taskId;
+            objTasks["title"] = title;
+            objTasks["status"] = status;
+            objTasks["estimatedPoints"] = estimatedPoints;
+            arrTasks.push(objTasks);
+            let foundAssignee = sprintBoardArr.find(
+              (e) => e.assignee === searchedAssignee
+            );
+            foundAssignee.tasks.push(objTasks);
+          }
+
+          break;
+
+        case "Remove Task":
+          if (!sprintBoardArr.find((e) => e.assignee === searchedAssignee)) {
+            console.log(
+              `Assignee ${searchedAssignee} does not exist on the board!`
+            );
+          } else {
+            let index = line[2];
+            let foundAssignee = sprintBoardArr.find(
+              (e) => e.assignee === searchedAssignee
+            );
+            if (index > foundAssignee.tasks.length - 1 || index < 0) {
+              console.log("Index is out of range!");
+            } else {
+              foundAssignee.tasks.splice(index, 1);
+            }
+          }
+
+          break;
+
+        case "Change Status":
+          let newTaskId = line[2];
+          let newStatus = line[3];
+          let foundAssignee = sprintBoardArr.find(
+            (e) => e.assignee === searchedAssignee
+          );
+
+          if (!foundAssignee) {
+            console.log(
+              `Assignee ${searchedAssignee} does not exist on the board!`
+            );
+            break;
+          }
+
+          if (!foundAssignee.tasks.find((e) => e.taskId === newTaskId)) {
+            console.log(
+              `Task with ID ${newTaskId} does not exist for ${searchedAssignee}!`
+            );
+          } else {
+            let foundTaskId = foundAssignee.tasks.find(
+              (e) => e.taskId === newTaskId
+            );
+            foundTaskId.status = newStatus;
+          }
+
+          break;
+
+        default:
+          break;
+      }
+    }
+
+    let toDoTasksTotalPoints = 0;
+    let inProgressTasksTotalPoints = 0;
+    let codeReviewTasksTotalPoints = 0;
+    let doneTasksTotalPoints = 0;
+
+    for (const item of sprintBoardArr) {
+      for (const task of item.tasks) {
+        switch (task.status) {
+          case "ToDo":
+            toDoTasksTotalPoints += Number(task.estimatedPoints);
+            break;
+          case "In Progress":
+            inProgressTasksTotalPoints += Number(task.estimatedPoints);
+            break;
+          case "Code Review":
+            codeReviewTasksTotalPoints += Number(task.estimatedPoints);
+            break;
+          case "Done":
+            doneTasksTotalPoints += Number(task.estimatedPoints);
+            break;
+
+          default:
+            break;
+        }
+      }
+    }
+    return {
+      toDoTasksTotalPoints,
+      inProgressTasksTotalPoints,
+      codeReviewTasksTotalPoints,
+      doneTasksTotalPoints,
+    };
   }
 }
 
